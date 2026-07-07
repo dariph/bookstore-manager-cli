@@ -25,7 +25,7 @@ export class RelatorioController {
           console.log("Opção inválida.");
         }
       } catch (error: any) {
-        console.error("❌ Erro ao gerar relatório:", error.message);
+        console.error("Erro ao gerar relatório:", error.message);
       }
     }
   }

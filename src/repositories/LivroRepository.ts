@@ -1,5 +1,5 @@
-import { pool } from "../database/connection";
-import { Livro } from "../models/types";
+import { pool } from "../database/connection.js";
+import type { Livro } from "../models/types.js";
 
 export class LivroRepository {
   async criar(livro: Livro): Promise<void> {
@@ -10,7 +10,6 @@ export class LivroRepository {
   }
 
   async listar(): Promise<any[]> {
-    // Exemplo de JOIN para já trazer o nome do autor na listagem de livros
     const query = `
             SELECT l.id, l.titulo, a.nome AS autor, l.quantidade_disponivel 
             FROM livros l 
@@ -23,7 +22,7 @@ export class LivroRepository {
 
   async buscarPorId(id: number): Promise<Livro | null> {
     const res = await pool.query("SELECT * FROM livros WHERE id = $1", [id]);
-    return res.rowCount > 0 ? res.rows[0] : null;
+    return res.rows.length > 0 ? res.rows[0] : null;
   }
 
   async remover(id: number): Promise<void> {

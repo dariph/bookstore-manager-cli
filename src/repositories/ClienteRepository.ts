@@ -1,5 +1,5 @@
-import { pool } from "../database/connection";
-import { Cliente } from "../models/types";
+import { pool } from "../database/connection.js";
+import type { Cliente } from "../models/types.js";
 
 export class ClienteRepository {
   async criar(cliente: Cliente): Promise<void> {
@@ -18,6 +18,6 @@ export class ClienteRepository {
     const res = await pool.query("SELECT * FROM clientes WHERE email = $1", [
       email,
     ]);
-    return res.rowCount > 0 ? res.rows[0] : null;
+    return res.rows.length > 0 ? res.rows[0] : null;
   }
 }

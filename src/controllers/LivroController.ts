@@ -1,5 +1,5 @@
-import { LivroService } from "../services/LivroService";
-import { askQuestion } from "../utils/cli";
+import { LivroService } from "../services/LivroService.js";
+import { askQuestion } from "../utils/cli.js";
 
 export class LivroController {
   private service = new LivroService();
