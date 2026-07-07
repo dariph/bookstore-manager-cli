@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: bookstore_postgres
+    restart: always
+    environment:
+      # Estes valores devem ser idênticos aos que você colocou no seu .env
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: rootmaster
+      POSTGRES_DB: bookstore_db
+    ports:
+      - "5432:5432"
+    volumes:
+      # Isso faz o Docker rodar seu script SQL automaticamente ao criar o banco!
+      - ./src/database/init.sql:/docker-entrypoint-initdb.d/init.sql
