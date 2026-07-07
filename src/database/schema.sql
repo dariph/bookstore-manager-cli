@@ -1,3 +1,4 @@
+-- Active: 1783434220306@@127.0.0.1@5432@bookstore_db
 CREATE DATABASE bookstore;
 
 -- Conecte-se ao banco bookstore antes de rodar os scripts abaixo:
