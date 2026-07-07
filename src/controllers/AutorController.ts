@@ -1,5 +1,5 @@
-import { AutorService } from "../services/AutorService";
-import { askQuestion } from "../utils/cli";
+import { AutorService } from "../services/AutorService.js";
+import { askQuestion } from "../utils/cli.js";
 
 export class AutorController {
   private service = new AutorService();

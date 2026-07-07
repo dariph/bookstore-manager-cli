@@ -8,7 +8,6 @@ export class EmprestimoService {
     livro_id: number,
     cliente_id: number,
   ): Promise<void> {
-    // Validação 1: O livro existe e tem estoque?
     const resLivro = await pool.query(
       "SELECT quantidade_disponivel FROM livros WHERE id = $1",
       [livro_id],
@@ -17,7 +16,6 @@ export class EmprestimoService {
     if (resLivro.rows[0].quantidade_disponivel <= 0)
       throw new Error("Livro sem disponibilidade de estoque.");
 
-    // Validação 2: O cliente existe?
     const resCliente = await pool.query(
       "SELECT id FROM clientes WHERE id = $1",
       [cliente_id],

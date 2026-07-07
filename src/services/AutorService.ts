@@ -1,5 +1,5 @@
-import { AutorRepository } from "../repositories/AutorRepository";
-import { Autor } from "../models/types";
+import { AutorRepository } from "../repositories/AutorRepository.js";
+import type { Autor } from "../models/types.js";
 
 export class AutorService {
   private autorRepo = new AutorRepository();
@@ -21,7 +21,7 @@ export class AutorService {
   }
 
   async remover(id: number): Promise<void> {
-    await this.consultarPorId(id); // Valida se existe
+    await this.consultarPorId(id);
     await this.autorRepo.remover(id);
   }
 }

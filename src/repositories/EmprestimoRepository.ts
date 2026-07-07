@@ -6,12 +6,12 @@ export class EmprestimoRepository {
     const client = await pool.connect();
     try {
       await client.query("BEGIN");
-      // Registra o empréstimo
+
       await client.query(
         "INSERT INTO emprestimos (livro_id, cliente_id) VALUES ($1, $2)",
         [emprestimo.livro_id, emprestimo.cliente_id],
       );
-      // Atualiza o estoque do livro
+
       await client.query(
         "UPDATE livros SET quantidade_disponivel = quantidade_disponivel - 1 WHERE id = $1",
         [emprestimo.livro_id],

@@ -1,5 +1,5 @@
-import { ClienteService } from "../services/ClienteService";
-import { askQuestion } from "../utils/cli";
+import { ClienteService } from "../services/ClienteService.js";
+import { askQuestion } from "../utils/cli.js";
 
 export class ClienteController {
   private service = new ClienteService();
