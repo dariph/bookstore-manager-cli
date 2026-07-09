@@ -25,6 +25,13 @@ export class LivroRepository {
     return res.rows.length > 0 ? res.rows[0] : null;
   }
 
+  async atualizar(id: number, livro: Livro): Promise<void> {
+    await pool.query(
+      "UPDATE livros SET titulo = $1, autor_id = $2, quantidade_disponivel = $3 WHERE id = $4",
+      [livro.titulo, livro.autor_id, livro.quantidade_disponivel, id],
+    );
+  }
+
   async remover(id: number): Promise<void> {
     await pool.query("DELETE FROM livros WHERE id = $1", [id]);
   }

@@ -25,11 +25,22 @@ export class EmprestimoRepository {
     }
   }
 
+  async listar(): Promise<any[]> {
+    const query = `
+            SELECT e.id, l.titulo as livro, c.nome as cliente, e.data_emprestimo, e.data_devolucao, e.status
+            FROM emprestimos e
+            INNER JOIN livros l ON e.livro_id = l.id
+            INNER JOIN clientes c ON e.cliente_id = c.id
+            ORDER BY e.data_emprestimo DESC;
+        `;
+    const res = await pool.query(query);
+    return res.rows;
+  }
+
   async devolver(emprestimoId: number): Promise<void> {
     const client = await pool.connect();
     try {
       await client.query("BEGIN");
-      // Busca qual é o livro
       const res = await client.query(
         "SELECT livro_id FROM emprestimos WHERE id = $1 AND status = $2",
         [emprestimoId, "ATIVO"],
@@ -39,12 +50,11 @@ export class EmprestimoRepository {
 
       const livroId = res.rows[0].livro_id;
 
-      // Marca como devolvido
       await client.query(
         "UPDATE emprestimos SET status = 'DEVOLVIDO', data_devolucao = CURRENT_DATE WHERE id = $1",
         [emprestimoId],
       );
-      // Retorna ao estoque
+
       await client.query(
         "UPDATE livros SET quantidade_disponivel = quantidade_disponivel + 1 WHERE id = $1",
         [livroId],

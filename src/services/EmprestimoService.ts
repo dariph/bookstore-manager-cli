@@ -28,4 +28,8 @@ export class EmprestimoService {
   async registrarDevolucao(emprestimo_id: number): Promise<void> {
     await this.emprestimoRepo.devolver(emprestimo_id);
   }
+
+  async listarTodos(): Promise<any[]> {
+    return await this.emprestimoRepo.listar();
+  }
 }
