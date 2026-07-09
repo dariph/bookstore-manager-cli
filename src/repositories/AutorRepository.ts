@@ -19,6 +19,13 @@ export class AutorRepository {
     return res.rows.length > 0 ? res.rows[0] : null;
   }
 
+  async atualizar(id: number, autor: Autor): Promise<void> {
+    await pool.query(
+      "UPDATE autores SET nome = $1, nacionalidade = $2 WHERE id = $3",
+      [autor.nome, autor.nacionalidade, id],
+    );
+  }
+
   async remover(id: number): Promise<void> {
     await pool.query("DELETE FROM autores WHERE id = $1", [id]);
   }

@@ -9,7 +9,10 @@ export class RelatorioController {
     while (rodando) {
       console.log("\n--- RELATÓRIOS ---");
       console.log("1. Livros Emprestados Atualmente");
-      console.log("2. Quantidade de Empréstimos por Livro");
+      console.log("2. Quantidade de Empréstimos por Livro (Top 5)");
+      console.log("3. Livros Disponíveis em Estoque");
+      console.log("4. Quantidade de Livros Cadastrados por Autor");
+      console.log("5. Clientes com Empréstimos Ativos");
       console.log("0. Voltar ao Menu Principal");
 
       const opcao = await askQuestion("Escolha uma opção: ");
@@ -19,13 +22,19 @@ export class RelatorioController {
           console.table(await this.repo.listarLivrosEmprestados());
         } else if (opcao === "2") {
           console.table(await this.repo.listarQuantidadeEmprestimosPorLivro());
+        } else if (opcao === "3") {
+          console.table(await this.repo.listarLivrosDisponiveis());
+        } else if (opcao === "4") {
+          console.table(await this.repo.listarLivrosPorAutor());
+        } else if (opcao === "5") {
+          console.table(await this.repo.listarClientesComEmprestimosAtivos());
         } else if (opcao === "0") {
           rodando = false;
         } else {
           console.log("Opção inválida.");
         }
       } catch (error: any) {
-        console.error("Erro ao gerar relatório:", error.message);
+        console.error("❌ Erro ao gerar relatório:", error.message);
       }
     }
   }

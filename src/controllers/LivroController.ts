@@ -32,6 +32,26 @@ export class LivroController {
           );
           await this.service.remover(idRemover);
           console.log("✅ Livro removido com sucesso!");
+        } else if (opcao === "4") {
+          const idBusca = parseInt(await askQuestion("ID do livro: "));
+          console.table([await this.service.consultarPorId(idBusca)]);
+        } else if (opcao === "5") {
+          const idAtualizar = parseInt(
+            await askQuestion("ID do livro para atualizar: "),
+          );
+          const titulo = await askQuestion("Novo título: ");
+          const autorId = parseInt(await askQuestion("Novo ID do Autor: "));
+          const quantidade = parseInt(
+            await askQuestion("Nova quantidade disponível: "),
+          );
+
+          await this.service.atualizar(
+            idAtualizar,
+            titulo,
+            autorId,
+            quantidade,
+          );
+          console.log("✅ Livro atualizado com sucesso!");
         } else if (opcao === "0") {
           rodando = false;
         } else {

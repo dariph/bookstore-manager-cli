@@ -5,9 +5,18 @@ import { LivroController } from "./controllers/LivroController.js";
 import { ClienteController } from "./controllers/ClienteController.js";
 import { EmprestimoController } from "./controllers/EmprestimoController.js";
 import { RelatorioController } from "./controllers/RelatorioController.js";
+import { AuthController } from "./controllers/AuthController.js";
 
 async function start() {
   await testConnection();
+
+  const authController = new AuthController();
+  const acessoLiberado = await authController.iniciarLogin();
+
+  if (!acessoLiberado) {
+    closeCLI();
+    process.exit(1);
+  }
 
   const autorController = new AutorController();
   const livroController = new LivroController();

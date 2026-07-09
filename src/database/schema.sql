@@ -28,3 +28,16 @@ CREATE TABLE emprestimos (
     data_devolucao DATE,
     status VARCHAR(20) DEFAULT 'ATIVO'
 );
+
+CREATE TABLE usuarios (
+    id SERIAL PRIMARY KEY,
+    login VARCHAR(50) UNIQUE NOT NULL,
+    senha VARCHAR(255) NOT NULL
+);
+
+INSERT INTO
+    usuarios (login, senha)
+VALUES (
+        'admin',
+        '$2b$10$wT.f/t.G6/T33tTf5T673.v4yFqM9D51v2C6G1C.Y6.V.v4yFqM9D'
+    );

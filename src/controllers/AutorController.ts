@@ -11,7 +11,8 @@ export class AutorController {
       console.log("1. Cadastrar Autor");
       console.log("2. Listar Autores");
       console.log("3. Consultar Autor por ID");
-      console.log("4. Remover Autor");
+      console.log("4. Atualizar Autor");
+      console.log("5. Remover Autor");
       console.log("0. Voltar ao Menu Principal");
 
       const opcao = await askQuestion("Escolha uma opção: ");
@@ -32,6 +33,19 @@ export class AutorController {
             console.table([await this.service.consultarPorId(idBusca)]);
             break;
           case "4":
+            const idAtualizar = parseInt(
+              await askQuestion("ID do autor para atualizar: "),
+            );
+            const novoNome = await askQuestion("Novo nome: ");
+            const novaNacionalidade = await askQuestion("Nova nacionalidade: ");
+            await this.service.atualizar(
+              idAtualizar,
+              novoNome,
+              novaNacionalidade,
+            );
+            console.log("✅ Autor atualizado com sucesso!");
+            break;
+          case "5":
             const idRemover = parseInt(
               await askQuestion("ID do autor para remover: "),
             );

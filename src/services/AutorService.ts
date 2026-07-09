@@ -20,6 +20,18 @@ export class AutorService {
     return autor;
   }
 
+  async atualizar(
+    id: number,
+    nome: string,
+    nacionalidade: string,
+  ): Promise<void> {
+    if (!nome || !nacionalidade)
+      throw new Error("Nome e nacionalidade são obrigatórios.");
+
+    await this.consultarPorId(id);
+    await this.autorRepo.atualizar(id, { nome, nacionalidade });
+  }
+
   async remover(id: number): Promise<void> {
     await this.consultarPorId(id);
     await this.autorRepo.remover(id);
