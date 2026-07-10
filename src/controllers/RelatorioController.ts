@@ -8,10 +8,10 @@ export class RelatorioController {
     let rodando = true;
     while (rodando) {
       console.log("\n--- RELATÓRIOS ---");
-      console.log("1. Livros Emprestados Atualmente");
-      console.log("2. Quantidade de Empréstimos por Livro (Top 5)");
-      console.log("3. Livros Disponíveis em Estoque");
-      console.log("4. Quantidade de Livros Cadastrados por Autor");
+      console.log("1. Livros Disponíveis");
+      console.log("2. Livros Emprestados");
+      console.log("3. Livros Cadastrados por Autor");
+      console.log("4. Quantidade de Empréstimos por Livro");
       console.log("5. Clientes com Empréstimos Ativos");
       console.log("0. Voltar ao Menu Principal");
 
@@ -19,13 +19,13 @@ export class RelatorioController {
 
       try {
         if (opcao === "1") {
-          console.table(await this.repo.listarLivrosEmprestados());
-        } else if (opcao === "2") {
-          console.table(await this.repo.listarQuantidadeEmprestimosPorLivro());
-        } else if (opcao === "3") {
           console.table(await this.repo.listarLivrosDisponiveis());
-        } else if (opcao === "4") {
+        } else if (opcao === "2") {
+          console.table(await this.repo.listarLivrosEmprestados());
+        } else if (opcao === "3") {
           console.table(await this.repo.listarLivrosPorAutor());
+        } else if (opcao === "4") {
+          console.table(await this.repo.listarQuantidadeEmprestimosPorLivro());
         } else if (opcao === "5") {
           console.table(await this.repo.listarClientesComEmprestimosAtivos());
         } else if (opcao === "0") {

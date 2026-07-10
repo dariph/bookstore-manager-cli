@@ -51,7 +51,7 @@ export class EmprestimoRepository {
       const livroId = res.rows[0].livro_id;
 
       await client.query(
-        "UPDATE emprestimos SET status = 'DEVOLVIDO', data_devolucao = CURRENT_DATE WHERE id = $1",
+        "UPDATE emprestimos SET status = 'DEVOLVIDO', data_devolucao = CURRENT_TIMESTAMP WHERE id = $1",
         [emprestimoId],
       );
 

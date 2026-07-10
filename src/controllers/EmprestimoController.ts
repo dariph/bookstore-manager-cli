@@ -29,7 +29,23 @@ export class EmprestimoController {
           await this.service.registrarDevolucao(emprestimoId);
           console.log("✅ Devolução registrada com sucesso!");
         } else if (opcao === "3") {
-          console.table(await this.service.listarTodos());
+          const emprestimos = await this.service.listarTodos();
+
+          const emprestimosFormatados = emprestimos.map((emp: any) => ({
+            ...emp,
+            data_emprestimo: emp.data_emprestimo
+              ? new Date(emp.data_emprestimo).toLocaleString("pt-BR", {
+                  timeZone: "America/Sao_Paulo",
+                })
+              : null,
+            data_devolucao: emp.data_devolucao
+              ? new Date(emp.data_devolucao).toLocaleString("pt-BR", {
+                  timeZone: "America/Sao_Paulo",
+                })
+              : null,
+          }));
+
+          console.table(emprestimosFormatados);
         } else if (opcao === "0") {
           rodando = false;
         } else {
