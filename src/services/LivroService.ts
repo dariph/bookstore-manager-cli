@@ -5,6 +5,7 @@ import type { Livro } from "../models/types.js";
 export class LivroService {
   private livroRepo = new LivroRepository();
   private autorRepo = new AutorRepository();
+  private repository = new LivroRepository();
 
   async cadastrar(
     titulo: string,
@@ -56,9 +57,24 @@ export class LivroService {
     });
   }
 
-  async remover(id: number): Promise<void> {
-    const livro = await this.livroRepo.buscarPorId(id);
-    if (!livro) throw new Error("Livro não encontrado.");
-    await this.livroRepo.remover(id);
+  async remover(id: number, quantidadeParaRemover: number): Promise<void> {
+    const livro = await this.repository.buscarPorId(id);
+
+    if (!livro) {
+      throw new Error("Livro não encontrado.");
+    }
+
+    if (quantidadeParaRemover > livro.quantidade_disponivel) {
+      throw new Error("A quantidade a remover é maior do que o estoque atual.");
+    }
+
+    const novaQuantidade = livro.quantidade_disponivel - quantidadeParaRemover;
+
+    if (novaQuantidade === 0) {
+      await this.repository.remover(id);
+    } else {
+      livro.quantidade_disponivel = novaQuantidade;
+      await this.repository.atualizar(id, livro);
+    }
   }
 }

@@ -10,7 +10,9 @@ export class LivroController {
       console.log("\n--- GERENCIAR LIVROS ---");
       console.log("1. Cadastrar Livro");
       console.log("2. Listar Livros");
-      console.log("3. Remover Livro");
+      console.log("3. Consultar Livro por ID");
+      console.log("4. Atualizar Livro");
+      console.log("5. Remover Livro");
       console.log("0. Voltar ao Menu Principal");
 
       const opcao = await askQuestion("Escolha uma opção: ");
@@ -27,15 +29,9 @@ export class LivroController {
         } else if (opcao === "2") {
           console.table(await this.service.listarTodos());
         } else if (opcao === "3") {
-          const idRemover = parseInt(
-            await askQuestion("ID do livro para remover: "),
-          );
-          await this.service.remover(idRemover);
-          console.log("✅ Livro removido com sucesso!");
-        } else if (opcao === "4") {
           const idBusca = parseInt(await askQuestion("ID do livro: "));
           console.table([await this.service.consultarPorId(idBusca)]);
-        } else if (opcao === "5") {
+        } else if (opcao === "4") {
           const idAtualizar = parseInt(
             await askQuestion("ID do livro para atualizar: "),
           );
@@ -52,6 +48,16 @@ export class LivroController {
             quantidade,
           );
           console.log("✅ Livro atualizado com sucesso!");
+        } else if (opcao === "5") {
+          const idRemover = parseInt(
+            await askQuestion("ID do livro para dar baixa no estoque: "),
+          );
+          const quantidadeRemover = parseInt(
+            await askQuestion("Quantidade a remover: "),
+          );
+
+          await this.service.remover(idRemover, quantidadeRemover);
+          console.log("✅ Estoque/Livro atualizado com sucesso!");
         } else if (opcao === "0") {
           rodando = false;
         } else {
