@@ -1,11 +1,12 @@
-import { LivroRepository } from "../repositories/LivroRepository.js";
+import type { Livro, LivroDetalhado } from "../models/types.js";
 import { AutorRepository } from "../repositories/AutorRepository.js";
-import type { Livro } from "../models/types.js";
+import { LivroRepository } from "../repositories/LivroRepository.js";
 
 export class LivroService {
-  private livroRepo = new LivroRepository();
-  private autorRepo = new AutorRepository();
-  private repository = new LivroRepository();
+  constructor(
+    private livroRepo: LivroRepository,
+    private autorRepo: AutorRepository,
+  ) {}
 
   async cadastrar(
     titulo: string,
@@ -14,11 +15,9 @@ export class LivroService {
   ): Promise<void> {
     if (!titulo || quantidade < 0)
       throw new Error("Dados inválidos para o livro.");
-
     const autorExiste = await this.autorRepo.buscarPorId(autor_id);
     if (!autorExiste)
       throw new Error("Autor inexistente. Não é possível cadastrar o livro.");
-
     await this.livroRepo.criar({
       titulo,
       autor_id,
@@ -26,13 +25,13 @@ export class LivroService {
     });
   }
 
-  async listarTodos(): Promise<any[]> {
-    return await this.livroRepo.listar();
+  async listarTodos(limite = 10, offset = 0): Promise<LivroDetalhado[]> {
+    return await this.livroRepo.listar(limite, offset);
   }
 
   async consultarPorId(id: number): Promise<Livro> {
     const livro = await this.livroRepo.buscarPorId(id);
-    if (!livro) throw new Error("Livro não encontrado.");
+    if (!livro) throw new Error("Livro não encontrado ou inativado.");
     return livro;
   }
 
@@ -45,11 +44,9 @@ export class LivroService {
     if (!titulo || quantidade < 0)
       throw new Error("Dados inválidos para o livro.");
     await this.consultarPorId(id);
-
     const autorExiste = await this.autorRepo.buscarPorId(autor_id);
     if (!autorExiste)
       throw new Error("Autor inexistente. Não é possível atualizar.");
-
     await this.livroRepo.atualizar(id, {
       titulo,
       autor_id,
@@ -57,24 +54,8 @@ export class LivroService {
     });
   }
 
-  async remover(id: number, quantidadeParaRemover: number): Promise<void> {
-    const livro = await this.repository.buscarPorId(id);
-
-    if (!livro) {
-      throw new Error("Livro não encontrado.");
-    }
-
-    if (quantidadeParaRemover > livro.quantidade_disponivel) {
-      throw new Error("A quantidade a remover é maior do que o estoque atual.");
-    }
-
-    const novaQuantidade = livro.quantidade_disponivel - quantidadeParaRemover;
-
-    if (novaQuantidade === 0) {
-      await this.repository.remover(id);
-    } else {
-      livro.quantidade_disponivel = novaQuantidade;
-      await this.repository.atualizar(id, livro);
-    }
+  async remover(id: number): Promise<void> {
+    await this.consultarPorId(id);
+    await this.livroRepo.remover(id);
   }
 }

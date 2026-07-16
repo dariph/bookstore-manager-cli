@@ -1,8 +1,8 @@
-import { AutorRepository } from "../repositories/AutorRepository.js";
 import type { Autor } from "../models/types.js";
+import { AutorRepository } from "../repositories/AutorRepository.js";
 
 export class AutorService {
-  private autorRepo = new AutorRepository();
+  constructor(private autorRepo: AutorRepository) {}
 
   async cadastrar(nome: string, nacionalidade: string): Promise<void> {
     if (!nome || !nacionalidade)
@@ -27,7 +27,6 @@ export class AutorService {
   ): Promise<void> {
     if (!nome || !nacionalidade)
       throw new Error("Nome e nacionalidade são obrigatórios.");
-
     await this.consultarPorId(id);
     await this.autorRepo.atualizar(id, { nome, nacionalidade });
   }

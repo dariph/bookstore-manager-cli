@@ -1,29 +1,45 @@
 import { pool } from "../database/connection.js";
-import type { Cliente } from "../models/types.js";
+import type { Cliente, ClienteListagem } from "../models/types.js";
 
 export class ClienteRepository {
-  async criar(cliente: Cliente): Promise<void> {
-    await pool.query("INSERT INTO clientes (nome, email) VALUES ($1, $2)", [
-      cliente.nome,
-      cliente.email,
-    ]);
+  async criar(cliente: Cliente): Promise<Cliente> {
+    const res = await pool.query<Cliente>(
+      "INSERT INTO clientes (nome, email) VALUES ($1, $2) RETURNING *",
+      [cliente.nome, cliente.email],
+    );
+
+    const novoCliente = res.rows[0];
+
+    if (!novoCliente) {
+      throw new Error(
+        "Falha ao criar o cliente. Nenhum dado retornado do banco.",
+      );
+    }
+
+    return novoCliente;
   }
 
-  async listar(): Promise<Cliente[]> {
-    const res = await pool.query("SELECT * FROM clientes ORDER BY id ASC");
+  async listar(): Promise<ClienteListagem[]> {
+    const res = await pool.query<ClienteListagem>(
+      "SELECT * FROM clientes WHERE ativo = TRUE ORDER BY id ASC",
+    );
     return res.rows;
   }
 
   async buscarPorEmail(email: string): Promise<Cliente | null> {
-    const res = await pool.query("SELECT * FROM clientes WHERE email = $1", [
-      email,
-    ]);
-    return res.rows.length > 0 ? res.rows[0] : null;
+    const res = await pool.query<Cliente>(
+      "SELECT * FROM clientes WHERE email = $1 AND ativo = TRUE",
+      [email],
+    );
+    return res.rows[0] ?? null;
   }
 
   async buscarPorId(id: number): Promise<Cliente | null> {
-    const res = await pool.query("SELECT * FROM clientes WHERE id = $1", [id]);
-    return res.rows.length > 0 ? res.rows[0] : null;
+    const res = await pool.query<Cliente>(
+      "SELECT * FROM clientes WHERE id = $1 AND ativo = TRUE",
+      [id],
+    );
+    return res.rows[0] ?? null;
   }
 
   async atualizar(id: number, cliente: Cliente): Promise<void> {
@@ -34,6 +50,6 @@ export class ClienteRepository {
   }
 
   async remover(id: number): Promise<void> {
-    await pool.query("DELETE FROM clientes WHERE id = $1", [id]);
+    await pool.query("UPDATE clientes SET ativo = FALSE WHERE id = $1", [id]);
   }
 }
