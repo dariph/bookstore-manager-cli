@@ -1,8 +1,8 @@
 import { AuthService } from "../services/AuthService.js";
-import { askQuestion, askPassword } from "../utils/cli.js";
+import { askPassword, askQuestion } from "../utils/cli.js";
 
 export class AuthController {
-  private authService = new AuthService();
+  constructor(private readonly authService: AuthService) {}
 
   async iniciarLogin(): Promise<boolean> {
     console.clear();
@@ -25,12 +25,13 @@ export class AuthController {
           console.log("\n✅ Login realizado com sucesso!\n");
           return true;
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         tentativas++;
-        console.log(`\n❌ Erro: ${error.message}`);
+        const mensagem = error instanceof Error ? error.message : String(error);
+        console.log(`\n❌ Erro: ${mensagem}`);
         if (tentativas < maxTentativas) {
           console.log(
-            `Você tem mais ${maxTentativas - tentativas} tentativa(s).\n`,
+            `Você tem mais ${String(maxTentativas - tentativas)} tentativa(s).\n`,
           );
         }
       }

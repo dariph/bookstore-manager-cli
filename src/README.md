@@ -1,151 +1,143 @@
-# BookStore Manager CLI 📚
+# BookStore Manager CLI (Acervo CLI) 📚
 
-O **BookStore Manager CLI** é uma aplicação executada via terminal (Command Line Interface - CLI) desenvolvida para o gerenciamento de uma pequena livraria.
-O sistema permite o controle completo e persistente de autores, livros, clientes e empréstimos.
+O **BookStore Manager CLI** é uma aplicação executada via terminal (Command Line Interface - CLI) desenvolvida para o gerenciamento de uma biblioteca/livraria. O sistema permite o controle completo, seguro e persistente de autores, livros, clientes e empréstimos.
 
 ## 🎯 Objetivo
 
-Substituir os registros manuais da livraria por uma aplicação informatizada, garantindo a integridade dos dados, aplicando regras de negócio consistentes (como validação de estoque durante empréstimos) e gerando relatórios precisos a partir de um banco de dados relacional.
+Substituir os registros manuais por uma aplicação informatizada, garantindo a integridade dos dados, aplicando regras de negócio consistentes (como validação de estoque e inativação em cascata) e gerando relatórios precisos a partir de um banco de dados relacional.
 
 ## 🚀 Tecnologias Utilizadas
 
 - **Back-End:** Node.js
 - **Linguagem:** TypeScript
 - **Banco de Dados:** PostgreSQL
-- **Bibliotecas principais:** `pg` (node-postgres) para conexão direta com o banco e comandos SQL, e `dotenv` para gerenciamento de variáveis de ambiente.
+- **Bibliotecas Principais:**
+  - `pg` (node-postgres) para conexão direta e queries SQL.
+  - `dotenv` para gerenciamento de variáveis de ambiente.
+  - `bcrypt` para criptografia segura de senhas de usuários.
+  - `@inquirer/prompts` para interações amigáveis e mascaramento de senhas no terminal.
 
 ## ⚙️ Requisitos para Execução
 
 - **Node.js** (versão 16.x ou superior)
-- **PostgreSQL** (versão 13.x ou superior) instalado e rodando localmente ou em nuvem.
-- **Git** para versionamento e clonagem do repositório.
+- **PostgreSQL** (versão 13.x ou superior) rodando localmente ou em nuvem
+- **Git** para versionamento
 
-## 🛠️ Configuração do Banco de Dados
+## 🛠️ Configuração do Ambiente e Banco de Dados
 
-1. Acesse o seu SGBD PostgreSQL (via pgAdmin, DBeaver ou psql).
+1. Acesse o seu SGBD PostgreSQL e crie o banco de dados inicial (ex: `bookstore`).
+2. Execute o script de criação localizado em `src/database/schema.sql` (ou equivalente no seu setup). Este script criará as tabelas `autores`, `livros`, `clientes`, `emprestimos` e `usuarios`.
+3. Na raiz do projeto, crie um arquivo chamado `.env` e configure as credenciais:
 
-2. Execute o script de criação localizado em `src/database/schema.sql`. Este script irá:
-   - Criar o banco de dados `bookstore`.
-   - Criar as tabelas normalizadas (`autores`, `livros`, `clientes`, `emprestimos`) com suas respectivas chaves primárias e estrangeiras.
+```env
+DB_USER=seu_usuario_postgres
+DB_PASSWORD=sua_senha
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=bookstore
+ADMIN_LOGIN=admin
+ADMIN_PASSWORD=sua_senha_segura
+```
 
-3. Na raiz do projeto, crie um arquivo chamado `.env` e configure as credenciais de acesso ao seu banco de dados local:
-   DB_USER=seu_usuario_postgres
-   DB_PASSWORD=sua_senha
-   DB_HOST=localhost
-   DB_PORT=5432
-   DB_NAME=bookstore
+## 💻 Instalação e Inicialização
 
-💻 Instalação
-Clone este repositório e instale as dependências do projeto:
+Clone este repositório e instale as dependências:
 
-_Terminal/Bash_
+```bash
 git clone https://github.com/dariph/bookstore-manager-cli.git
 cd bookstore-manager-cli
 npm install
+```
 
-▶️ Execução
-Para rodar o projeto em ambiente de desenvolvimento (utilizando ts-node):
+Antes de iniciar a aplicação pela primeira vez, crie o usuário administrador rodando o script de seed (que fará o hash da senha definida no `.env`):
 
-_Terminal/Bash_
+```bash
+npx ts-node src/seed.ts
+```
+
+Para rodar o projeto em ambiente de desenvolvimento:
+
+```bash
 npm run dev
-Para compilar o código TypeScript para JavaScript e executar a versão de produção:
+```
 
-_Terminal/Bash_
-npm run build
-npm start
+## 🏗️ Arquitetura do Projeto
 
-🏗️ Arquitetura do Projeto
-O sistema foi desenvolvido utilizando o padrão de Arquitetura em Camadas (Clean Architecture e SOLID), garantindo a separação clara de responsabilidades e facilitando a manutenção e escalabilidade do código:
+O sistema adota o padrão de **Arquitetura em Camadas** (Clean Architecture/MVC), promovendo alta coesão e baixo acoplamento:
 
-CLI (Menu): Ponto de entrada iterativo (main.ts).
+- **CLI (Menu):** Ponto de entrada (`main.ts`).
+- **Controllers:** Interação com o usuário via terminal (`@inquirer/prompts`).
+- **Services:** Regras de negócio, validações (ex: verificar estoque, formatar emails) e criptografia.
+- **Repositories:** Comunicação exclusiva com o PostgreSQL.
+- **Models:** Interfaces TypeScript (`types.ts`).
 
-Controllers: Gerenciam a interação com o usuário via terminal (entradas e saídas).
+### 📁 Estrutura de Pastas
 
-Services: Contêm todas as regras de negócio e validações lógicas (ex: verificação de estoque antes de um empréstimo).
-
-Repositories: Camada exclusiva para comunicação com o PostgreSQL, executando queries SQL puras.
-
-Models: Interfaces e tipos estáticos do TypeScript que representam as entidades.
-
-📁 Estrutura de Pastas
-Plaintext
+```text
 📦 bookstore-manager-cli
 ┣ 📂 src
-┃ ┣ 📂 controllers # Controladores dos menus de interação
-┃ ┣ 📂 database # Conexão (connection.ts) e scripts SQL (schema.sql)
-┃ ┣ 📂 models # Interfaces TypeScript (types.ts)
-┃ ┣ 📂 repositories # Comunicação direta com o banco de dados via pg
-┃ ┣ 📂 services # Lógica e validações de regras de negócio
-┃ ┣ 📂 utils # Funções utilitárias auxiliares (ex: cli.ts)
-┃ ┗ 📜 main.ts # Arquivo principal e inicializador da aplicação
-┣ 📜 .env # Variáveis de ambiente
-┣ 📜 .gitignore # Arquivos ignorados pelo Git
-┣ 📜 package.json # Dependências e scripts de execução
-┣ 📜 tsconfig.json # Configurações do compilador TypeScript
-┗ 📜 README.md # Documentação oficial do projeto
+┃ ┣ 📂 controllers    # Controladores (Auth, Autores, Livros, etc.)
+┃ ┣ 📂 database       # Conexão via pool do pg e scripts SQL
+┃ ┣ 📂 models         # Interfaces TypeScript
+┃ ┣ 📂 repositories   # Queries SQL puras
+┃ ┣ 📂 services       # Lógica de negócio e tratamento de erros
+┃ ┣ 📂 utils          # Funções utilitárias (CLI inputs, formatadores de data)
+┃ ┣ 📜 main.ts        # Ponto de entrada da aplicação
+┃ ┗ 📜 seed.ts        # Script para popular o usuário Admin
+┣ 📜 .env             # Variáveis de ambiente
+┣ 📜 package.json     # Dependências e scripts
+┗ 📜 README.md        # Documentação do projeto
+```
 
-✅ Funcionalidades Implementadas
-Gerenciamento de Autores: Cadastro, listagem, consulta por ID e remoção.
+## ✅ Funcionalidades Implementadas
 
-Gerenciamento de Livros: Cadastro (vinculado a um autor), listagem e remoção.
+- **🔒 Autenticação:** Sistema de login obrigatório para acessar o menu principal, com limite de 3 tentativas e senhas protegidas por hash (`bcrypt`).
+- **👥 Gerenciamento de Autores e Clientes:** Cadastro, listagem, consulta por ID, atualização e **Inativação Lógica** (Soft Delete, alterando a flag `ativo = FALSE`).
+- **📚 Gerenciamento de Livros:** Cadastro vinculado a autores, inativação e **Listagem Paginada** (limite de 10 itens por página).
+- **🔄 Gestão de Empréstimos:**
+  - Registro com baixa automática de estoque.
+  - Bloqueio de empréstimos para clientes/livros inativos ou sem estoque.
+  - Devolução com reposição automática de estoque e registro de timestamp (`pt-BR`).
+- **📊 Relatórios Avançados (SQL JOINs):**
+  1. Livros Disponíveis.
+  2. Livros Emprestados Atualmente.
+  3. Livros Cadastrados por Autor.
+  4. Quantidade de Empréstimos por Livro.
+  5. Clientes com Empréstimos Ativos.
+- **🛡️ Tratamento de Erros:** Exceções isoladas impedem o travamento da aplicação, exibindo alertas visuais padronizados (`❌ Erro:`).
 
-Gerenciamento de Clientes: Cadastro (com e-mail único) e listagem.
+## 💡 Exemplo de Utilização
 
-Gerenciamento de Empréstimos:
+Ao iniciar a aplicação, você será recebido pela tela de autenticação:
 
-Registro de empréstimos com baixa automática de estoque.
+```text
+==================================================
+    Bem-vindo ao Acervo CLI
+    Sistema de Gestão de Biblioteca
+==================================================
 
-Validação de restrições (livros sem estoque ou entidades inexistentes).
+Informe os dados do usuário
+? login: admin
+? senha: [hidden]
 
-Registro de devolução com reposição automática de estoque.
-
-Relatórios (JOINs SQL):
-
-Listagem de livros atualmente emprestados detalhando o cliente e data.
-
-Quantidade total de empréstimos históricos por livro.
-
-Tratamento de Erros: Exceções capturadas assincronamente (Try/Catch) exibindo mensagens amigáveis no terminal sem derrubar a aplicação.
-
-💡 Exemplos de Utilização
-Ao iniciar a aplicação rodando npm run dev, você verá o seguinte menu principal:
-
-# Plaintext
-
-    BOOKSTORE MANAGER CLI
+✅ Login realizado com sucesso!
 
 ==============================
-
+    BOOKSTORE MANAGER CLI
+==============================
 1. Gerenciar Autores
 2. Gerenciar Livros
 3. Gerenciar Clientes
 4. Gerenciar Empréstimos
 5. Relatórios
-6. Encerrar Aplicação
+0. Encerrar Aplicação
 
 Escolha uma opção:
-Navegando para a opção de Relatórios e listando livros emprestados:
-
-Plaintext
---- RELATÓRIOS ---
-
-1. Livros Emprestados Atualmente
-2. Quantidade de Empréstimos por Livro
-3. Voltar ao Menu Principal
-
-Escolha uma opção: 1
-
-| (index) | titulo         | cliente         | data_emprestimo          |
-| ------- | -------------- | --------------- | ------------------------ |
-| 0       | 'Código Limpo' | 'Dari Pinheiro' | 2026-07-06T03:00:00.000Z |
+```
 
 ## 🚀 Melhorias Futuras
 
-Este projeto foi construído com uma arquitetura escalável, o que permite a fácil implementação de novas funcionalidades no futuro. Algumas das melhorias planejadas incluem:
-
-- **Evolução para API RESTful:** Migrar a interface CLI para uma API HTTP utilizando frameworks como Express ou NestJS, permitindo o consumo por aplicações Front-End ou Mobile.
-- **Mapeamento Objeto-Relacional (ORM):** Substituir as queries SQL puras pela implementação do `Sequelize`, `Prisma` ou `TypeORM`, facilitando as migrações (migrations) e a manutenção do banco de dados.
-- **Autenticação e Autorização:** Criar um sistema de login para os funcionários da livraria com controle de nível de acesso (ex: Administrador vs. Atendente), utilizando criptografia de senhas (Bcrypt) e tokens (JWT).
-- **Testes Automatizados:** Implementar testes unitários e de integração utilizando `Jest`, garantindo que as regras de negócio cruciais (como a validação de estoque) não sejam quebradas durante futuras atualizações.
-- **Sistema de Multas:** Adicionar lógica de negócio para calcular multas automaticamente em caso de devolução com atraso (após a data estipulada de vencimento).
-- **Paginação e Filtros:** Implementar paginação nas listagens do terminal e opções de busca avançada (ex: filtrar livros por gênero ou autores por nacionalidade).
+- **Evolução para API RESTful:** Migrar a interface de terminal para uma API HTTP (Express/NestJS) para consumo via Front-End.
+- **ORM:** Substituir as queries SQL puras pelo `Prisma` ou `TypeORM` para facilitar manutenções futuras e gerenciar _migrations_.
+- **Sistema de Multas:** Lógica para aplicar taxas diárias a devoluções atrasadas.
+- **Testes Automatizados:** Implementação de testes unitários com `Jest` nos _Services_.

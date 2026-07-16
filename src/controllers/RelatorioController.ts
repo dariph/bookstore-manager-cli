@@ -2,7 +2,7 @@ import { RelatorioRepository } from "../repositories/RelatorioRepository.js";
 import { askQuestion } from "../utils/cli.js";
 
 export class RelatorioController {
-  private repo = new RelatorioRepository();
+  constructor(private readonly relatorioRepo: RelatorioRepository) {}
 
   async menu(): Promise<void> {
     let rodando = true;
@@ -19,22 +19,27 @@ export class RelatorioController {
 
       try {
         if (opcao === "1") {
-          console.table(await this.repo.listarLivrosDisponiveis());
+          console.table(await this.relatorioRepo.listarLivrosDisponiveis());
         } else if (opcao === "2") {
-          console.table(await this.repo.listarLivrosEmprestados());
+          console.table(await this.relatorioRepo.listarLivrosEmprestados());
         } else if (opcao === "3") {
-          console.table(await this.repo.listarLivrosPorAutor());
+          console.table(await this.relatorioRepo.listarLivrosPorAutor());
         } else if (opcao === "4") {
-          console.table(await this.repo.listarQuantidadeEmprestimosPorLivro());
+          console.table(
+            await this.relatorioRepo.listarQuantidadeEmprestimosPorLivro(),
+          );
         } else if (opcao === "5") {
-          console.table(await this.repo.listarClientesComEmprestimosAtivos());
+          console.table(
+            await this.relatorioRepo.listarClientesComEmprestimosAtivos(),
+          );
         } else if (opcao === "0") {
           rodando = false;
         } else {
           console.log("Opção inválida.");
         }
-      } catch (error: any) {
-        console.error("❌ Erro ao gerar relatório:", error.message);
+      } catch (error: unknown) {
+        const mensagem = error instanceof Error ? error.message : String(error);
+        console.error("❌ Erro ao gerar relatório:", mensagem);
       }
     }
   }

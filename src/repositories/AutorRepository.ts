@@ -10,13 +10,18 @@ export class AutorRepository {
   }
 
   async listar(): Promise<Autor[]> {
-    const res = await pool.query("SELECT * FROM autores ORDER BY id ASC");
+    const res = await pool.query<Autor>(
+      "SELECT * FROM autores WHERE ativo = TRUE ORDER BY id ASC",
+    );
     return res.rows;
   }
 
   async buscarPorId(id: number): Promise<Autor | null> {
-    const res = await pool.query("SELECT * FROM autores WHERE id = $1", [id]);
-    return res.rows.length > 0 ? res.rows[0] : null;
+    const res = await pool.query<Autor>(
+      "SELECT * FROM autores WHERE id = $1 AND ativo = TRUE",
+      [id],
+    );
+    return res.rows[0] ?? null;
   }
 
   async atualizar(id: number, autor: Autor): Promise<void> {
@@ -27,6 +32,25 @@ export class AutorRepository {
   }
 
   async remover(id: number): Promise<void> {
-    await pool.query("DELETE FROM autores WHERE id = $1", [id]);
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+
+      await client.query("UPDATE autores SET ativo = FALSE WHERE id = $1", [
+        id,
+      ]);
+
+      await client.query(
+        "UPDATE livros SET ativo = FALSE WHERE autor_id = $1",
+        [id],
+      );
+
+      await client.query("COMMIT");
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
   }
 }

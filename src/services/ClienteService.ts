@@ -1,20 +1,22 @@
-import type { Cliente } from "../models/types.js";
+import type { Cliente, ClienteListagem } from "../models/types.js";
 import { ClienteRepository } from "../repositories/ClienteRepository.js";
 
 export class ClienteService {
-  private clienteRepo = new ClienteRepository();
+  constructor(private clienteRepo: ClienteRepository) {}
 
   async cadastrar(nome: string, email: string): Promise<void> {
     if (!nome || !email) throw new Error("Nome e email são obrigatórios.");
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) throw new Error("Formato de e-mail inválido.");
+
     const clienteExistente = await this.clienteRepo.buscarPorEmail(email);
     if (clienteExistente)
       throw new Error("Já existe um cliente cadastrado com este email.");
-
     await this.clienteRepo.criar({ nome, email });
   }
 
-  async listarTodos(): Promise<any[]> {
+  async listarTodos(): Promise<ClienteListagem[]> {
     return await this.clienteRepo.listar();
   }
 
@@ -26,13 +28,15 @@ export class ClienteService {
 
   async atualizar(id: number, nome: string, email: string): Promise<void> {
     if (!nome || !email) throw new Error("Nome e email são obrigatórios.");
-    await this.consultarPorId(id); // Valida se existe
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) throw new Error("Formato de e-mail inválido.");
+
+    await this.consultarPorId(id);
     const clienteExistente = await this.clienteRepo.buscarPorEmail(email);
     if (clienteExistente && clienteExistente.id !== id) {
       throw new Error("Já existe outro cliente cadastrado com este email.");
     }
-
     await this.clienteRepo.atualizar(id, { nome, email });
   }
 
